@@ -42,7 +42,8 @@ acceptedLanIps="192.168.0.0/24"
 acceptedWanCountries="it" # iso notation
 ipWanAddrRoot=http://www.ipdeny.com/ipblocks/data/countries
 ipWanAddrSuffix=zone
-acceptedWanIpsPath=/home/localadmin/srv_maint/scripts/iptables
+# Local full directory name in which to save the WAN IPs (default setting is /home/$USER)
+acceptedWanIpsPath=/home/$USER
 acceptedWanIpsFileName=acceptedWanIps.txt # filename will have '.' in front, i.e. it will be hidden.
 
 # Accepted Ports.
