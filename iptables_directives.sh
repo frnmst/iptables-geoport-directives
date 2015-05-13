@@ -1,12 +1,49 @@
 #!/bin/bash
 
-# See url for more info - http://www.cyberciti.biz/faq/?p=3402
-# Author: nixCraft <www.cyberciti.biz> under GPL v.2.0+
-# Post Author: frnmst (Franco Masotti) franco.masotti@live.com
+#
+# iptables_directives.sh
+#
+# Copyright (C) 2015 frnmst (Franco Masotti) <franco.masotti@live.com>
+#                                            <franco.masotti@student.unife.it>
+#
+# This file is part of iptables-geoport-directives.
+#
+# iptables-geoport-directives is free software: you can redistribute it and/or
+# modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iptables-geoport-directives is distributed in the hope that it will be
+# useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iptables-geoport-directives.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
 
-# New version heavily based on https://wiki.archlinux.org/index.php/Simple_stateful_firewall
-#	https://wiki.archlinux.org/index.php/Iptables
-#	and a little on http://www.thegeekstuff.com/2011/06/iptables-rules-examples/ as well as nixCraft for the bash stuff.
+# New version heavily based on:
+# https://wiki.archlinux.org/index.php/Simple_stateful_firewall
+# https://wiki.archlinux.org/index.php/Iptables
+# and a little on:
+# http://www.thegeekstuff.com/2011/06 /iptables-rules-examples/
+# as well as nixCraft for the bash stuff.
+# See url for more info - http://www.cyberciti.biz/faq/?p=3402
+# Pre author: nixCraft <www.cyberciti.biz>
+# released under GPL v.2.0+
+
+# TODO (in order of priority)
+# TUNE/FINISH LOGGING,
+# Get current LAN ips automatically
+# DO MORE COMPACT/EFFICIENT CODE WITH LESS VARIABLES AND unsetting UNUSED ONES.
+# Do better output (i.e. write [DONE] or [FAILED] at the edge right of the shell using ncurses?)
+# Make this portable, also for other shells & systems
+
+# NOT WORKING
+# Not sure if logging works after iptables-save (i.e. when the rules are applied after reboot).
 
 # Only {bash,IPv4,TCP,UDP} version
 # Aim = Restrictive INPUT access
@@ -20,17 +57,6 @@
 # 3	iptables not running
 # 4	Invalid port
 # 5	No valid wan ip list found
-
-# TODO (in order of priority)
-# TUNE/FINISH LOGGING,
-# Get current LAN ips automatically
-# DO MORE COMPACT/EFFICIENT CODE WITH LESS VARIABLES AND unsetting UNUSED ONES.
-# Do better output (i.e. write [DONE] or [FAILED] at the edge right of the shell using ncurses?)
-# Make this portable, also for other shells & systems
-
-# NOT WORKING
-# Not sure if logging works after iptables-save (i.e. when the rules are applied after reboot).
-
 
 # Set path.
 PATH=$PATH:/usr/bin
