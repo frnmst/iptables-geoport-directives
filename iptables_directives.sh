@@ -22,7 +22,7 @@
 # 5	No valid wan ip list found
 
 # TODO (in order of priority)
-# TUNE/FINISH LOGGING, EXPORT VARIABLES IN EMPTY FILE TO BE PARSED BY THIS PROGRAM. FILE MUST BE NAMED $0.config
+# TUNE/FINISH LOGGING,
 # Get current LAN ips automatically
 # DO MORE COMPACT/EFFICIENT CODE WITH LESS VARIABLES AND unsetting UNUSED ONES.
 # Do better output (i.e. write [DONE] or [FAILED] at the edge right of the shell using ncurses?)
@@ -31,50 +31,11 @@
 # NOT WORKING
 # Not sure if logging works after iptables-save (i.e. when the rules are applied after reboot).
 
-## START VARIABLE CONFIG
-# Space separated values in variables inside double quotes
 
-
-# LAN
-acceptedLanIps="192.168.0.0/24"
-
-# WAN
-acceptedWanCountries="it" # iso notation
-ipWanAddrRoot=http://www.ipdeny.com/ipblocks/data/countries
-ipWanAddrSuffix=zone
-# Local full directory name in which to save the WAN IPs (default setting is /home/$USER)
-acceptedWanIpsPath=/home/$USER
-acceptedWanIpsFileName=acceptedWanIps.txt # filename will have '.' in front, i.e. it will be hidden.
-
-# Accepted Ports.
-# Accepted values:
-#	#	LAN+WAN
-#	#l	LAN
-#	#w	WAN
-# where # is a port number between 1 and 65535
-# 6881w to activate for torrent
-acceptedPorts="22 123l 631l 1900l 3128l 8200l" # 1900 and 8200 used for dlna; 123 is ntp
-
-# Invalid Packet policy
-# Accepted values:
-# polite	RFC compilant
-# rude		if you dont't want that others know that this computer exists. i.e. hidden mode
-invalidPacketPolicy=rude
-
-# logging
-# Accepted Values:
-# yes		log in journalctl or whatever is enabled to log
-# no		don't log
-loggingEnabled=yes
-
-# iptables save file location
-saveFileLocation="/etc/iptables/iptables.rules"
-
-## END VARIABLE CONFIG
-
+# Set path.
 PATH=$PATH:/usr/bin
 
-# Exit codes
+# Exit codes.
 OK=0
 invalidOption=1
 usrNotRoot=2
@@ -82,158 +43,103 @@ iptablesNotRunning=3
 invalidPort=4
 noValidIpWanListFound=5
 
-
-# main
-#
-# Get arguments from shell
-# # of elements
+# Get arguments from shell.
+# # of elements.
 argc="$#"
 # strings
 argv=("$@")
 
-# Max num of elements
+# Max num of elements.
 maxArgsNum=3
 
-# Some state variables set to default values
+# Some state variables set to default values.
 verboseSet="false"
 configFile=""
-# Define an empty array for protocol type
+# Define an empty array for protocol type.
 prot=( )
 acceptedWanIps=( )
-# Define an empty array used only for port numbers
+# Define an empty array used only for port numbers.
 portNum=( )
-# define empty array to decide between LAN or WAN
+# define empty array to decide between LAN or WAN.
 location=( )
-# Init system
+# Init system.
 initSys=""
 
 # Systemctl specs # TODO. see https://wiki.archlinux.org/index.php/Iptables#Configuration_file
 #systemctlDirectiveDir="/etc/systemd/system/iptables.service.d"
 #systemctlDirectoryFile="00-pre-network.conf"
 
-# Function that prints help info
+# Function that prints help info.
 function printHelp ()
 {
-	echo -e -n "$0 help\n"
-	echo -e -n "Options\n"
-	echo -e -n "\t-c --config\t\tconfiguration file\n"
-	echo -e -n "\t-h --help\t\tshow this help\n"
-	echo -e -n "\t-i --init\t\tinitialize configuration file\n"
-	echo -e -n "\t-r --reset\t\treset iptables to default values\n"
-	echo -e -n "\t-v --verbose\t\tverbose at debug level\n"
-	echo -e -n "Exit codes\n"
-	echo -e -n "\t$OK\t\t\tOK\n"
-	echo -e -n "\t$invalidOption\t\t\tInvalid option or too much parameters\n"
-	echo -e -n "\t$usrNotRoot\t\t\tUser launching program is not root\n"
-	echo -e -n "\t$iptablesNotRunning\t\t\tiptables not running TO BE IMPLEMENTED\n"
-	echo -e -n "\t$invalidPort\t\t\tInvalid Port\n"
-	echo -e -n "\t$noValidIpWanListFound\t\t\tNo valid ip WAN list found\n"
+
+	echo -en "\
+"$0" help\n\
+"$0" [-h | -i | -r | -v] -c <file-name>\n\
+Options\n\
+\t-c --config\t\tconfiguration file\n\
+\t-h --help\t\tshow this help\n\
+\t-i --init\t\tinitialize configuration file\n\
+\t-r --reset\t\treset iptables to default values\n\
+\t-v --verbose\t\tverbose at debug level\n\
+Exit codes\n\
+\t"$OK"\t\t\tOK\n\
+\t"$invalidOption"\t\t\tInvalid option or too much parameters\n\
+\t"$usrNotRoot"\t\t\tUser launching program is not root\n\
+\t"$iptablesNotRunning"\t\t\tiptables not running TO BE IMPLEMENTED\n\
+\t"$invalidPort"\t\t\tInvalid Port\n\
+\t"$noValidIpWanListFound"\t\t\tNo valid ip WAN list found\n"
+
 	return 0
+
 }
 
-function initConfigFile ()
+function readConfigFile ()
 {
-	# create config file if it does not exists
-	if [ !-f "iptables_directives.conf" ]; then
-		# TODO BETTER AND PORTABLE
-		cat <<EOF > "iptables_directives.conf"
-			## START DIRECTIVES CONFIG
-			# Space separated values in variables inside double quotes
 
-
-			# LAN
-			acceptedLanIps=\"192.168.0.0/24\"
-
-			# WAN
-			acceptedWanCountries=\"it\" # iso notation
-			ipWanAddrRoot=http://www.ipdeny.com/ipblocks/data/countries
-			ipWanAddrSuffix=zone
-			acceptedWanIpsPath=/home/localadmin/srv_maint/scripts/iptables
-			acceptedWanIpsFileName=acceptedWanIps.txt # filename will have '.' in front, i.e. it will be hidden.
-
-			# Accepted Ports.
-			# Accepted values:
-			#	#	LAN+WAN
-			#	#l	LAN
-			#	#w	WAN
-			# where # is a port number between 1 and 65535
-			# 6881w to activate for torrent
-			acceptedPorts=\"22 123l 631l 1900l 3128l 8200l\" # 1900 and 8200 used for dlna; 123 is ntp
-
-			# Invalid Packet policy
-			# Accepted values:
-			# polite	RFC compilant
-			# rude		if you dont't want that others know that this computer exists. i.e. hidden mode
-			invalidPacketPolicy=rude
-
-			# logging
-			# Accepted Values:
-			# yes		log in journalctl or whatever is enabled to log
-			# no		don't log
-			loggingEnabled=yes
-
-			# iptables save file location
-			saveFileLocation="/etc/iptables/iptables.rules"
-
-			## END DIRECTIVES CONFIG
-
-EOF
+	if [ -f "$configFile" ] && [ ! -z "$configFile" ]; then
+		source "$configFile"
+	else
+		return 1
 	fi
 
 	return 0
 }
 
-# filename has to be passed
-function parseConfigFile ()
-{
-	# file name has to be passed
-	initConfigFile
-
-	# read -r: each backslash is not an escape char
-	while read -r line
-	do
-		echo -e -n "$line\n\n"
-		# get until '=' excluded
-#		case filteredLine in:
-#			conf directives)
-#				directive = value
-#				if [ "$directive" == ""]
-#				then
-#					directive="default value"
-#				else
-#					dir
-	done < iptables_directives.conf
-
-	return 0
-}
-
-# Verbose Function
+# Verbose Function.
 function verboseMsg ()
 {
+
 	# Get message to print
 	msg="$1"
 
 	if [ "$verboseSet" == "true" ]; then
-		echo -e -n "$msg"
+		echo -en "$msg"
 	fi
 
 	return 0
+
 }
 
-# Exit error mmessage function
+# Exit error message function.
 function exitWithMsg ()
 {
+
 	# get state and msg vars
 	state="$1"
 	msg="$2"
 
-	echo -e -n "[$state]\t$msg\n"
+
+	echo -en "[$state]\t$msg\n"
+
 	exit "$state"
+
 }
 
-# Reset iptables to default values
+# Reset iptables to default values.
 function reset ()
 {
+
 	iptables -F
 	iptables -X
 	iptables -t nat -F
@@ -249,10 +155,13 @@ function reset ()
 	iptables -P OUTPUT ACCEPT
 
 	return 0
+
 }
 
-# Function to retieve Valid Wan Ips
-# This does not garantuee to hav a REAL valid list in the end (i.e. when restoring the old file or when getting a list which does not contain valid IPs).
+# Function to retrieve Valid Wan Ips.
+# This does not guarantuee to have a REAL valid list in the end (i.e. when
+# restoring the old file or when getting a list which does not contain valid
+# IPs).
 function getAcceptedWanIps ()
 {
 
@@ -311,13 +220,14 @@ function getAcceptedWanIps ()
 		fi
 	fi
 
-
 	return 0
+
 }
 
-# Auto recognize protocol
+# Auto recognize protocol.
 function getProtByPort ()
 {
+
         tmp=$1[@]
 	lAcceptedPorts=("${!tmp}")
         tmp=$2[@]
@@ -395,7 +305,6 @@ function getProtByPort ()
 		i=$(($i+1));
 	done
 
-
 	return 0
 
 }
@@ -404,6 +313,7 @@ function getProtByPort ()
 # It creates user defined chains and sets first basic rules on how to handle packets
 function iptablesSet ()
 {
+
 	# get argument
 	lInvalidPacketPolicy="$1"
 	lLoggingEnabled="$2"
@@ -423,7 +333,9 @@ function iptablesSet ()
 	iptables -N UDP
 
 	# From Arch wiki:
-	# The first rule added to the INPUT chain will allow traffic that belongs to established connections, or new valid traffic that is related to these connections such as ICMP errors, or echo replies
+	# The first rule added to the INPUT chain will allow traffic that
+	# belongs to established connections, or new valid traffic that is
+	# related to these connections such as ICMP errors, or echo replies
 	iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
 	# loopback interface INPUT traffic enabled for ping and debugging stuff
@@ -476,6 +388,7 @@ function iptablesSet ()
 	verboseMsg "[DONE]\n"
 
 	return 0
+
 }
 
 # Another set of core rules.
@@ -526,17 +439,20 @@ function iptablesApply ()
 		i=$(($i+1))
 	done
 
-	# drop every other packet as default policy (for unset rules). In this way we are certain that the firewall works as expected.
+	# drop every other packet as default policy (for unset rules). In this
+	# way we are certain that the firewall works as expected.
 	iptables -P INPUT DROP
 
 	verboseMsg "[DONE]\n"
 
 	return 0
+
 }
 
 # Parsing function for bash arguments
 function parseArgs ()
 {
+
 	# arguments treated as positional values
 	lArgc=$1
 	# array passed by reference
@@ -558,26 +474,11 @@ function parseArgs ()
 			"-c" | "--config")
 				# check config file if -c or --config switch is selected
 				# argv[1+x] may be a path
-				case "${lArgv[$(($i+1))]}" in
-					# empty path is not valid
-					"" )
-						return 1
-					;;
-					# non empty path may be valid or not. system will decide that.
-					* )
-						configFile="${lArgv[$i]}"
-						loop="false"
-					;;
-				esac
-
+				configFile="${lArgv[$i+1]}"
+				loop="false"
 			;;
 			"-h" | "--help" )
 				printHelp
-				loop="false"
-				exit "$OK" # UGLY BUT WORKS
-			;;
-			"-i" | "--init" )
-				initConfigFile
 				loop="false"
 				exit "$OK" # UGLY BUT WORKS
 			;;
@@ -611,11 +512,13 @@ function parseArgs ()
 	done
 
 	return 0
+
 }
 
 # Check if user root is launching program
 if [ "$UID" -ne 0 ]; then
-	exitWithMsg "$usrNotRoot" "You must be root user (uid = 0) to launch the program"
+	exitWithMsg "$usrNotRoot" "You must be root user (uid = 0) \
+to launch the program"
 fi
 
 # TODO
@@ -634,8 +537,11 @@ if [ "$?" -eq 1 ]; then
 	exitWithMsg "$invalidOption" "Invalid option, filename or too much parameters"
 fi
 
-# check config file switch to read/init and parse config file
-# TODO HERE
+# Check config file switch to read config file
+readConfigFile
+if [ "$?" -eq 1 ]; then
+	exitWithMsg "$invalidOption" "Invalid option, filename or too much parameters"
+fi
 
 # Get a shorter variable for file name
 file="$acceptedWanIpsPath/.$acceptedWanIpsFileName"

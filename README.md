@@ -2,8 +2,17 @@
 Simple shell script for GNU/Linux, built on iptables, which is able to filter incoming packets based on accepted port numbers and countries. It is aimed to SOHO users.
 
 ###WHATIS
-This is a bash script suitable for GNU/Linux systems (but it might work on other *nix-like systems too) that is able to filter incoming packets from LAN and WAN based on standard port numbers and countries' IP addresses. It uses a simple stateful firewall structure. The user selects the "accepted countries" (using the ISO notation) and the "accepted ports" (which are automatically toggled to be TCP or UDP, depending on standard port numbers). It is also possible to decide the policy of filtered packets (polite or rude policy, depending respectively if you want that the sender knows that his packets have been rejected or not) and to set logging of filtered packets.
-All user settings are at the top of the main script. Each setting is explained. In the future these settings will be available in a separate file.
+This is a bash script suitable for GNU/Linux systems (but it might work on 
+other *nix-like systems too) that is able to filter incoming packets from LAN 
+and WAN based on standard port numbers and countries' IP addresses. It uses a 
+simple stateful firewall structure. The user selects the "accepted countries" 
+(using the ISO notation) and the "accepted ports" (which are automatically 
+toggled to be TCP or UDP, depending on standard port numbers). It is also 
+possible to decide the policy of filtered packets (polite or rude policy, 
+depending respectively if you want that the sender knows that his packets have 
+been rejected or not) and to set logging of filtered packets.
+~~All user settings are at the top of the main script. Each setting is 
+explained. In the future these settings will be available in a separate file.~~
 
 ###PACKETDEPS
 - bash
@@ -23,7 +32,8 @@ Achieved good points. The script works, but not sure about the logging part. Imp
 ###TODO
 In order of importance:
 
-1. EXPORT VARIABLES IN EMPTY FILE TO BE PARSED BY THIS PROGRAM. FILE MUST BE NAMED $0.config
+1. ~~EXPORT VARIABLES IN EMPTY FILE TO BE PARSED BY THIS PROGRAM. FILE MUST BE 
+   NAMED $0.config~~ **DONE**
 
 2. Get current LAN ips automatically.
 
@@ -42,6 +52,7 @@ In order of importance:
 ###HELP
 ```
 ./iptables_directives.sh help
+./iptables_directives.sh [-h | -i | -r | -v] -c <file-name>
 Options
 	-c --config		configuration file
 	-h --help		show this help
