@@ -79,7 +79,6 @@ function printHelp ()
 Options\n\
 \t-c --config\t\tconfiguration file\n\
 \t-h --help\t\tshow this help\n\
-\t-i --init\t\tinitialize configuration file\n\
 \t-r --reset\t\treset iptables to default values\n\
 \t-v --verbose\t\tverbose at debug level\n\
 Exit codes\n\
