@@ -1,9 +1,11 @@
 # iptables-geoport-directives
+
 Simple shell script for GNU/Linux, built on iptables, which is able to filter 
 incoming packets based on accepted port numbers and countries. It is aimed to 
 SOHO users.
 
-###WHAT IS
+### WHAT IS
+
 This is a bash script suitable for GNU/Linux systems (but it might work on 
 other *nix-like systems too) that is able to filter incoming packets from LAN 
 and WAN based on standard port numbers and countries' IP addresses. It uses a 
@@ -14,11 +16,13 @@ possible to decide the policy of filtered packets (polite or rude policy,
 depending respectively if you want that the sender knows that his packets have 
 been rejected or not) and to set logging of filtered packets.
 
-###Packet dependencies
+### Packet dependencies
+
 - bash
 - iptables active and running
 
-###Howto
+### Howto
+
 Download: `$ git clone https://github.com/frnmst/iptables-geoport-directives`.
 
 Before uing this script you must have iptables active and running.
@@ -28,11 +32,13 @@ Change preferences in `iptables_directives.config` or create a new one.
 
 You also must be root to run this script: `sudo ./iptables_direcives.sh -c iptables_directives.config`.
 
-###Developement status
+### Developement status
+
 Achieved good points. The script works, but not sure about the logging part. 
 Important features are missing, as explaned next.
 
-###TODO
+### TODO
+
 In order of importance:
 
 1. ~~EXPORT VARIABLES IN EMPTY FILE TO BE PARSED BY THIS PROGRAM. FILE MUST BE 
@@ -54,7 +60,8 @@ In order of importance:
 
 8. Clean the code.
 
-###Help
+### Help
+
 ```
 ./iptables_directives.sh help
 ./iptables_directives.sh [-h | -r | -v] -c <file-name>
@@ -72,5 +79,6 @@ Exit codes
 	5			No valid ip WAN list found
 ```
 
-###Contact
+### Contact
+
 franco.masotti@live.com or franco.masotti@student.unife.it
