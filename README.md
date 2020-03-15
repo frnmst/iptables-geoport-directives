@@ -4,6 +4,9 @@ Simple shell script for GNU/Linux, built on iptables, which is able to filter
 incoming packets based on accepted port numbers and countries. It is aimed to 
 SOHO users.
 
+**Warning: THIS REPOSITORY IS DEPRECATED. HAVE A LOOK AT https://frnmst.github.io/automated-tasks/scripts.html#iptables-geoport-py
+FOR THE DEVELOPMENT.**
+
 ### WHAT IS
 
 This is a bash script suitable for GNU/Linux systems (but it might work on 
