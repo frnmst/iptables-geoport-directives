@@ -4,7 +4,7 @@ Simple shell script for GNU/Linux, built on iptables, which is able to filter
 incoming packets based on accepted port numbers and countries. It is aimed to 
 SOHO users.
 
-**Warning: THIS REPOSITORY IS DEPRECATED. HAVE A LOOK AT HERE:**
+**Warning: THIS REPOSITORY IS DEPRECATED. HAVE A LOOK HERE:**
 
 - https://software.franco.net.eu.org/frnmst/automated-tasks
 - https://codeberg.org/frnmst/automated-tasks
